@@ -17,17 +17,69 @@ export const Pagination = ({
   setCurrentPage,
 }: Props) => {
   const pageNumbers = generatePageNumbers(numberOfPages);
-  const lastPage = numberOfPages;
 
   const handleIncrement = () => {
-    if (currentPage === lastPage) return;
-    setCurrentPage((currPage) => currPage + 1);
+    if (currentPage < numberOfPages) setCurrentPage((currPage) => currPage + 1);
   };
 
   const handleDecrement = () => {
-    if (currentPage === 1) return;
-    setCurrentPage((currPage) => currPage - 1);
+    if (currentPage !== 1) setCurrentPage((currPage) => currPage - 1);
   };
+
+  const shouldShowEndDots = currentPage < numberOfPages - 1;
+  const shouldShowStartDots = currentPage > 4;
+  const shouldRenderIntermediateNumber =
+    currentPage > 3 && currentPage < numberOfPages;
+
+  const renderPageNumbers = (pageNumbers: number[]) =>
+    pageNumbers.length <= 4 ? (
+      pageNumbers.map((pageNumber) => (
+        <PaginationItem
+          key={pageNumber}
+          page={pageNumber}
+          currentPage={currentPage}
+          setCurrentPage={setCurrentPage}
+        />
+      ))
+    ) : (
+      <>
+        <PaginationItem
+          page={1}
+          currentPage={currentPage}
+          setCurrentPage={setCurrentPage}
+        />
+        <PaginationItem
+          page={2}
+          currentPage={currentPage}
+          setCurrentPage={setCurrentPage}
+        />
+        <PaginationItem
+          page={3}
+          currentPage={currentPage}
+          setCurrentPage={setCurrentPage}
+        />
+
+        {shouldShowStartDots && <div>...</div>}
+
+        {shouldRenderIntermediateNumber && (
+          <PaginationItem
+            page={currentPage}
+            currentPage={currentPage}
+            setCurrentPage={setCurrentPage}
+          />
+        )}
+
+        {currentPage > 3 && currentPage < numberOfPages - 1}
+
+        {shouldShowEndDots && <div>...</div>}
+
+        <PaginationItem
+          page={numberOfPages}
+          currentPage={currentPage}
+          setCurrentPage={setCurrentPage}
+        />
+      </>
+    );
 
   return (
     <ul className={css.container}>
@@ -35,57 +87,7 @@ export const Pagination = ({
         PREVIOUS
       </li>
 
-      {pageNumbers.length <= 4 &&
-        pageNumbers.map((pageNumber) => (
-          <PaginationItem
-            key={pageNumber}
-            page={pageNumber}
-            currentPage={currentPage}
-            setCurrentPage={setCurrentPage}
-          />
-        ))}
-
-      {pageNumbers.length > 4 && (
-        <>
-          <PaginationItem
-            page={1}
-            currentPage={currentPage}
-            setCurrentPage={setCurrentPage}
-          />
-          <PaginationItem
-            page={2}
-            currentPage={currentPage}
-            setCurrentPage={setCurrentPage}
-          />
-          <PaginationItem
-            page={3}
-            currentPage={currentPage}
-            setCurrentPage={setCurrentPage}
-          />
-
-          {(currentPage <= 3 || currentPage === lastPage) && <div>...</div>}
-
-          {currentPage > 3 && currentPage < lastPage && (
-            <>
-              {currentPage > 4 && <div>...</div>}
-
-              <PaginationItem
-                page={currentPage}
-                currentPage={currentPage}
-                setCurrentPage={setCurrentPage}
-              />
-
-              {currentPage < lastPage - 1 && <div>...</div>}
-            </>
-          )}
-
-          <PaginationItem
-            page={lastPage}
-            currentPage={currentPage}
-            setCurrentPage={setCurrentPage}
-          />
-        </>
-      )}
+      {renderPageNumbers(pageNumbers)}
 
       <li className={css.button} onClick={handleIncrement}>
         NEXT
